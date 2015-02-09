@@ -1,7 +1,7 @@
 Role Name
 ========
 
-playbook for instaalling monit in linux box
+playbook for installing monit in linux box
 Requirements
 ------------
 
@@ -20,7 +20,7 @@ A list of other roles hosted on Galaxy should go here, plus any details in regar
 License
 -------
 
-BSD
+GPL
 
 Author Information
 ------------------
