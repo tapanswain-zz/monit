@@ -108,7 +108,7 @@ galaxy_info:
   #- database:nosql
   #- database:sql
   #- development
-  - monitoring
+   - monitoring
   #- networking
   #- packaging
   #- system
