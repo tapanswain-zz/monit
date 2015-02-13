@@ -17,24 +17,16 @@
   gather_facts: false
 
   tasks:
-    #--------------------------------------------------------
-    # 1.  Install monit using tar 
     # ---------------------------------------------------------------------
-     - name: "copy source from monit site"
-       shell: " wget {{ auth_url }}/{{ monit_version }}/{{ pkg_name }}"
-       args:
-         creates: /opt/monit
-         chdir: /opt/monit
-    #--------------------------------------------------------
-    # 2. untar 
+    # 1.  Install monit 
     # ---------------------------------------------------------------------
-     - name: "untar the source"
-       shell: "/bin/tar -zxf {{ pkg_name }}
-       args:
-         chdir: /opt/monit
+     - name: "Install monit"
+       yum:
+         state: present
+         name: monit
 
-    #--------------------------------------------------------
-    # 3. copy the configuration file
+    # ---------------------------------------------------------------------
+    # 2. copy the configuration file
     # ---------------------------------------------------------------------
      - name: "copy the config file"
        template: 
@@ -42,9 +34,11 @@
          dest: "/etc/monitrc"
          mode: 0700
 
-    #--------------------------------------------------------
-    # 5. run monit
+    # ---------------------------------------------------------------------
+    # 3. Start Monit
     # ---------------------------------------------------------------------
      - name: "start monit"
-       command: "/opt/monit/bin/monit"
+       service: started
+       name: "monit"
+       enabled: "yes"
 
