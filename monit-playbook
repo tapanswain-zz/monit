@@ -4,11 +4,11 @@
 ### playbooks/monit config
 ### ---------------------------------------------------------------------
 ###
-###    1. copy source from monit site.
-###    2. untar the source.
-###    3. copy the configuration file.
-###    4. run monit
-###   
+###    1. Install monit
+###    2. Copy the monit configuration File
+###    3. Start the monit services 
+###    4. Add the monit services to runlevel
+###
 ###
 ### ---------------------------------------------------------------------
 - hosts: "{{ hosts }}"
@@ -18,27 +18,40 @@
 
   tasks:
     # ---------------------------------------------------------------------
-    # 1.  Install monit 
+    # 1.  Install monit
     # ---------------------------------------------------------------------
      - name: "Install monit"
        yum:
-         state: present
-         name: monit
+         state: latest
+         name: "monit"
+       tags:
+         - 'pkgs'
 
     # ---------------------------------------------------------------------
-    # 2. copy the configuration file
+    # 2. Copy the monit configuration file 
     # ---------------------------------------------------------------------
      - name: "copy the config file"
-       template: 
-         src: "monitrc"
+       template:
+         src: "templates/monitrc"
          dest: "/etc/monitrc"
          mode: 0700
+       tags:
+         - 'monit_configuration'
 
     # ---------------------------------------------------------------------
     # 3. Start Monit
     # ---------------------------------------------------------------------
      - name: "start monit"
-       service: started
-       name: "monit"
-       enabled: "yes"
+       service:
+        state: started
+        name: "monit"
+       tags:
+         - 'monit_start'
 
+    # ---------------------------------------------------------------------
+    # 4. Add the monit services to runlevel
+    # ---------------------------------------------------------------------
+     - name: "Add monit to runlevel 3 and 5 
+       command: "/sbin/chkconfig --level 35 on monit"
+       tags:
+         - 'monit_configuration' 
