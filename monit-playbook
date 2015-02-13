@@ -4,11 +4,10 @@
 ### playbooks/monit config
 ### ---------------------------------------------------------------------
 ###
-###    1. copy source from monit site
-###    2. untar the source
-###    3. copy
-###    4. config monit
-###    5. run monit
+###    1. copy source from monit site.
+###    2. untar the source.
+###    3. copy the configuration file.
+###    4. run monit
 ###   
 ###
 ### ---------------------------------------------------------------------
@@ -19,28 +18,33 @@
 
   tasks:
     #--------------------------------------------------------
-    # 1. copy source from monit site
+    # 1.  Install monit using tar 
     # ---------------------------------------------------------------------
      - name: "copy source from monit site"
-       shell: (cd /opt/; get http://mmonit.com/monit/dist/binary/5.11/monit-5.11-linux-x64.tar.gz)
+       shell: " wget {{ auth_url }}/{{ monit_version }}/{{ pkg_name }}"
+       args:
+         creates: /opt/monit
+         chdir: /opt/monit
     #--------------------------------------------------------
     # 2. untar 
     # ---------------------------------------------------------------------
      - name: "untar the source"
-       shell: (cd /opt/ ;tar -zxvf /opt/monit-5.11-linux-x64.tar.gz )
+       shell: "/bin/tar -zxf {{ pkg_name }}
+       args:
+         chdir: /opt/monit
+
     #--------------------------------------------------------
-    # 3. copy
+    # 3. copy the configuration file
     # ---------------------------------------------------------------------
-     - name: "cpy ther config file"
-       shell: (cp /opt/monit-5.11/conf/monitrc  /etc/)
-    #--------------------------------------------------------
-    # 4. config monit
-    # ---------------------------------------------------------------------
-     - name: "changing permission monit"
-       shell: (chmod 0700 /etc/monitrc)
+     - name: "copy the config file"
+       template: 
+         src: "monitrc"
+         dest: "/etc/monitrc"
+         mode: 0700
+
     #--------------------------------------------------------
     # 5. run monit
     # ---------------------------------------------------------------------
      - name: "start monit"
-       shell: (/opt/monit-5.9/bin/monit)
+       command: "/opt/monit/bin/monit"
 
