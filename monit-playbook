@@ -8,14 +8,11 @@
 ###    2. Copy the monit configuration File
 ###    3. Start the monit services 
 ###    4. Add the monit services to runlevel
-###
-###
 ### ---------------------------------------------------------------------
 - hosts: "{{ hosts }}"
   user: root
   serial: 1
   gather_facts: false
-
   tasks:
     # ---------------------------------------------------------------------
     # 1.  Install monit
