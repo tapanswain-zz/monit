@@ -4,12 +4,11 @@
 ### playbooks/monit config
 ### ---------------------------------------------------------------------
 ###
-###    1. copy source from monit site
-###    2. untar the source
-###    3. copy
-###    4. config monit
-###    5. run monit
-###   
+###    1. Install monit
+###    2. Copy the monit configuration File
+###    3. Start the monit services 
+###    4. Add the monit services to runlevel
+###
 ###
 ### ---------------------------------------------------------------------
 - hosts: "{{ hosts }}"
@@ -18,29 +17,41 @@
   gather_facts: false
 
   tasks:
-    #--------------------------------------------------------
-    # 1. copy source from monit site
     # ---------------------------------------------------------------------
-     - name: "copy source from monit site"
-       shell: (cd /opt/; get http://mmonit.com/monit/dist/binary/5.11/monit-5.11-linux-x64.tar.gz)
-    #--------------------------------------------------------
-    # 2. untar 
+    # 1.  Install monit
     # ---------------------------------------------------------------------
-     - name: "untar the source"
-       shell: (cd /opt/ ;tar -zxvf /opt/monit-5.11-linux-x64.tar.gz )
-    #--------------------------------------------------------
-    # 3. copy
+     - name: "Install monit"
+       yum:
+         state: latest
+         name: "monit"
+       tags:
+         - 'pkgs'
+
     # ---------------------------------------------------------------------
-     - name: "cpy ther config file"
-       shell: (cp /opt/monit-5.11/conf/monitrc  /etc/)
-    #--------------------------------------------------------
-    # 4. config monit
+    # 2. Copy the monit configuration file 
     # ---------------------------------------------------------------------
-     - name: "changing permission monit"
-       shell: (chmod 0700 /etc/monitrc)
-    #--------------------------------------------------------
-    # 5. run monit
+     - name: "copy the config file"
+       template:
+         src: "templates/monitrc"
+         dest: "/etc/monitrc"
+         mode: 0700
+       tags:
+         - 'monit_configuration'
+
+    # ---------------------------------------------------------------------
+    # 3. Start Monit
     # ---------------------------------------------------------------------
      - name: "start monit"
-       shell: (/opt/monit-5.9/bin/monit)
+       service:
+        state: started
+        name: "monit"
+       tags:
+         - 'monit_start'
 
+    # ---------------------------------------------------------------------
+    # 4. Add the monit services to runlevel
+    # ---------------------------------------------------------------------
+     - name: "Add monit to runlevel 3 and 5 
+       command: "/sbin/chkconfig --level 35 on monit"
+       tags:
+         - 'monit_configuration' 
